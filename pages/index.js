@@ -1,5 +1,5 @@
 function Home() {
-  return <h1>Lucy, eu amo você. Se você me ama, dá uma risadinha! 🥹 Vi que você está um pouquito tristonha, o que eu posso fazer para te deixar mais feliz?</h1>
+  return <h1>Não se limite a se preparar para o amanhã. Procure também descartar-se daquilo que já não faz mais sentido, que não é produtivo, que não contribui para os objetivos. - Peter Drucker</h1>
 }
 
 export default Home;
