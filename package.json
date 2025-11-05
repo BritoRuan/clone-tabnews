@@ -2,7 +2,7 @@
   "name": "clone-tabnews",
   "version": "1.0.0",
   "description": "implementation of https://www.tabnews.com.br/ for the course.dev",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "dev": "npm run services:up && next dev",
     "services:up": "docker compose -f infra/compose.yaml up -d",
@@ -22,7 +22,11 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/pg": "^8.15.6",
+    "@types/react": "19.2.2",
     "jest": "^29.6.2",
-    "prettier": "^3.6.2"
+    "prettier": "^3.6.2",
+    "typescript": "5.9.3"
   }
 }
