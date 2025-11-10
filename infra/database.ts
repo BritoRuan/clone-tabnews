@@ -7,7 +7,9 @@ async function query(queryObject: string | QueryConfig): Promise<QueryResult> {
     user: process.env.POSTGRES_USER,
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
-    ssl: true
+    ssl: {
+      rejectUnauthorized: false
+    }
   });
 
   console.log('Credencias do postgres', {
