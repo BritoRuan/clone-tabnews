@@ -13,8 +13,9 @@
     "test": "jest",
     "test:watch": "jest --watchAll",
     "migration:create": "node-pg-migrate -j ts -m infra/migrations create",
-    "migration:up": "tsx ./node_modules/.bin/node-pg-migrate -m infra/migrations --envPath .env.development up",
-    "migration:down": "tsx ./node_modules/.bin/node-pg-migrate -m infra/migrations --envPath .env.development down"
+    "build:migrations": "tsc -p tsconfig.build.json",
+    "migration:up": "npm run build:migrations && node-pg-migrate -m dist/infra/migrations --envPath .env.development up",
+    "migration:down": "npm run build:migrations && node-pg-migrate -m dist/infra/migrations --envPath .env.development down"
   },
   "author": "",
   "license": "MIT",
