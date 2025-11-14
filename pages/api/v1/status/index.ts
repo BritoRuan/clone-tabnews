@@ -1,4 +1,4 @@
-import database from "infra/database";
+import database from "infra/database/database";
 import { NextApiRequest, NextApiResponse } from "next";
 
 async function status(_request: NextApiRequest, response: NextApiResponse) {
