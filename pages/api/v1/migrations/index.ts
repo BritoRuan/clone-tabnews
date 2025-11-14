@@ -1,4 +1,4 @@
-import { defaultMigrationOptions } from "infra/database/migrations/default-migration-options";
+import { defaultMigrationOptions } from "@/infra/database/migrations/default-migration-options";
 import { NextApiRequest, NextApiResponse } from "next";
 import migrationRunner from "node-pg-migrate";
 

@@ -13,6 +13,9 @@ const createJestConfig = nextJest({
 
 const jestConfig: Config = {
   moduleDirectories: ["node_modules", "<rootDir>"],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1',
+  },
 };
 
 export default createJestConfig(jestConfig);
