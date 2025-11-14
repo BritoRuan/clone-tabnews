@@ -6,7 +6,5 @@
     "outDir": "./dist/infra/migrations",
     "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
-  "include": [
-    "infra/migrations"
-  ]
+  "include": ["infra/migrations"]
 }
