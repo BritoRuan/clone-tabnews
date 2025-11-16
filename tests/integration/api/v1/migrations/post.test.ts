@@ -24,7 +24,6 @@ describe("POST /api/v1/migrations", () => {
     expect(Array.isArray(firstResponseBody)).toBe(true);
     expect(firstResponseBody.length).toBeGreaterThan(0);
 
-
     const { req: secondRequest, res: secondResponse } = createMocks({
       method: "POST",
     });
