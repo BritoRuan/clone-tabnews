@@ -1,13 +1,20 @@
 import { defaultMigrationOptions } from "@/infra/database/migrations/default-migration-options";
 import { NextApiRequest, NextApiResponse } from "next";
 import migrationRunner from "node-pg-migrate";
+import database from "@/infra/database/database";
 
 export default async function migrations(
   request: NextApiRequest,
   response: NextApiResponse,
 ) {
+  const dbClient = await database.getNewClient();
+
   if (request.method === "GET") {
-    const pendingMigrations = await migrationRunner(defaultMigrationOptions);
+    const pendingMigrations = await migrationRunner({
+      ...defaultMigrationOptions,
+      dbClient: dbClient,
+    });
+    await dbClient.end();
 
     return response.status(200).json(pendingMigrations);
   }
@@ -16,7 +23,10 @@ export default async function migrations(
     const migratedMigrations = await migrationRunner({
       ...defaultMigrationOptions,
       dryRun: false,
+      dbClient: dbClient,
     });
+
+    await dbClient.end();
 
     if (migratedMigrations.length > 0) {
       return response.status(201).json(migratedMigrations);
