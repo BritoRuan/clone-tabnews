@@ -12,6 +12,7 @@ export default async function migrations(
   if (request.method === "GET") {
     const pendingMigrations = await migrationRunner({
       ...defaultMigrationOptions,
+      noLock: true,
       dbClient: dbClient,
     });
     await dbClient.end();

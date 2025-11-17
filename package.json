@@ -15,7 +15,7 @@
     "test:watch": "jest --watchAll --runInBand",
     "migration:create": "node-pg-migrate -j ts -m infra/migrations create",
     "build:migrations": "tsc -p tsconfig.build.json",
-    "copy:migrations": "node infra/database/migrations/copy-built-migrations.js",
+    "copy:migrations": "ts-node --project tsconfig.scripts.json infra/database/migrations/copy-built-migrations.ts",
     "migration:up": "npm run build:migrations && node-pg-migrate -m dist/infra/migrations --envPath .env.development up",
     "migration:down": "npm run build:migrations && node-pg-migrate -m dist/infra/migrations --envPath .env.development down"
   },
