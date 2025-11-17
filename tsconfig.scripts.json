@@ -1,7 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "CommonJS"
+    "noEmit": false,
+    "module": "CommonJS",
+    "outDir": "./dist/scripts",
+    "tsBuildInfoFile": "./dist/scripts/.tsbuildinfo"
   },
   "include": ["infra/database/migrations/copy-built-migrations.ts"]
 }
