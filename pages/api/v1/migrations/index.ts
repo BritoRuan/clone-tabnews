@@ -7,34 +7,44 @@ export default async function migrations(
   request: NextApiRequest,
   response: NextApiResponse,
 ) {
-  const dbClient = await database.getNewClient();
+  const allowedMethod = ["GET", "POST"];
 
-  if (request.method === "GET") {
-    const pendingMigrations = await migrationRunner({
-      ...defaultMigrationOptions,
-      noLock: true,
-      dbClient: dbClient,
+  if (!allowedMethod.includes(request.method)) {
+    return response.status(405).json({
+      error: `Method ${request.method} not allowed`,
     });
-    await dbClient.end();
-
-    return response.status(200).json(pendingMigrations);
   }
+  let dbClient;
+  try {
+    dbClient = await database.getNewClient();
 
-  if (request.method === "POST") {
-    const migratedMigrations = await migrationRunner({
-      ...defaultMigrationOptions,
-      dryRun: false,
-      dbClient: dbClient,
-    });
+    if (request.method === "GET") {
+      const pendingMigrations = await migrationRunner({
+        ...defaultMigrationOptions,
+        noLock: true,
+        dbClient: dbClient,
+      });
 
-    await dbClient.end();
-
-    if (migratedMigrations.length > 0) {
-      return response.status(201).json(migratedMigrations);
+      return response.status(200).json(pendingMigrations);
     }
 
-    return response.status(200).json(migratedMigrations);
-  }
+    if (request.method === "POST") {
+      const migratedMigrations = await migrationRunner({
+        ...defaultMigrationOptions,
+        dryRun: false,
+        dbClient: dbClient,
+      });
 
-  return response.status(405).end();
+      if (migratedMigrations.length > 0) {
+        return response.status(201).json(migratedMigrations);
+      }
+
+      return response.status(200).json(migratedMigrations);
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
+  } finally {
+    dbClient.end();
+  }
 }
