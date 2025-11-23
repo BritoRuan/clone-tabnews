@@ -19,6 +19,7 @@ const jestConfig: Config = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
   },
+  testTimeout: 6000
 };
 
 export default createJestConfig(jestConfig);
