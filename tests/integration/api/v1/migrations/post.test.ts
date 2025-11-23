@@ -1,3 +1,4 @@
+import orchestrator from "@/tests/orchestrator";
 import database from "infra/database/database";
 import { createMocks } from "node-mocks-http";
 import handler from "pages/api/v1/migrations";
@@ -7,6 +8,11 @@ async function resetDatabase() {
 }
 
 describe("POST /api/v1/migrations", () => {
+
+  beforeAll(async () => {
+    await orchestrator.waitForAllServices();
+  });
+
   beforeAll(async () => {
     await resetDatabase();
   });
