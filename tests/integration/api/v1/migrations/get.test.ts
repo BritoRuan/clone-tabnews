@@ -8,7 +8,6 @@ async function resetDatabase() {
 }
 
 describe("GET /api/v1/migrations", () => {
-
   beforeAll(async () => {
     await orchestrator.waitForAllServices();
   });
