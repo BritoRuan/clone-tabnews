@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable no-unused-vars */
 import { MigrationBuilder, ColumnDefinitions } from "node-pg-migrate";
 
 export const shorthands: ColumnDefinitions | undefined = undefined;
