@@ -9,7 +9,7 @@ describe("POST /api/v1/migrations", () => {
   });
 
   describe("Anonymous user", () => {
-    describe("Running pending migrations", () => {
+    describe("Retrieving pending migrations", () => {
       it("For the first time", async () => {
         const { req: firstRequest, res: firstResponse } = createMocks({
           method: "POST",
