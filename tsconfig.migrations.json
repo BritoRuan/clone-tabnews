@@ -3,10 +3,9 @@
   "compilerOptions": {
     "noEmit": false,
     "module": "CommonJS",
-    "target": "ES2019",
-    "rootDir": "infra/migrations",
-    "outDir": "infra/migrations",
-    "esModuleInterop": true
+    "rootDir": ".",
+    "outDir": "./dist",
+    "incremental": false
   },
   "include": ["infra/migrations/**/*.ts"]
 }
