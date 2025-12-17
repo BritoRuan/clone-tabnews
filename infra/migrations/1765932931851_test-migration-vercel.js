@@ -4,5 +4,5 @@ exports.shorthands = void 0;
 exports.up = up;
 exports.down = down;
 exports.shorthands = undefined;
-async function up(pgm) { }
-async function down(pgm) { }
+async function up(pgm) {}
+async function down(pgm) {}
