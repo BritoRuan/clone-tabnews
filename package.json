@@ -19,7 +19,7 @@
     "lint:prettier:check": "prettier --check .",
     "lint:prettier:fix": "prettier --write .",
     "lint:eslint:check": "next lint --dir .",
-    "build": "next build",
+    "build": "npm run migrations:build:migrations && next build",
     "prepare": "husky",
     "commit": "cz"
   },
