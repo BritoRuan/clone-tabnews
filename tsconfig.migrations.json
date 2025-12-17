@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "outDir": "./dist/infra/migrations",
+    "rootDir": "./infra/migrations",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["infra/migrations/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

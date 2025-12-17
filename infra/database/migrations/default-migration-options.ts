@@ -1,10 +1,9 @@
 import { RunnerOption } from "node-pg-migrate";
-import { resolve } from "node:path";
 
 export const defaultMigrationOptions: RunnerOption = {
   databaseUrl: process.env.DATABASE_URL,
   dryRun: false,
-  dir: resolve(__dirname, "../migrations"),
+  dir: process.env.MIGRATIONS_DIR,
   direction: "up",
   verbose: true,
   migrationsTable: process.env.DATABASE_MIGRATIONS_TABLE,
