@@ -3,9 +3,9 @@ import { join } from "node:path";
 
 export const defaultMigrationOptions: RunnerOption = {
   databaseUrl: process.env.DATABASE_URL,
-  dryRun: false,
-  dir: join(process.cwd(), "infra", "migrations"),
+  dryRun: true,
+  dir: join(process.cwd(), process.env.MIGRATIONS_DIR!),
   direction: "up",
   verbose: true,
-  migrationsTable: process.env.DATABASE_MIGRATIONS_TABLE ?? "pgmigrations",
+  migrationsTable: process.env.DATABASE_MIGRATIONS_TABLE,
 };
