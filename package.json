@@ -14,7 +14,7 @@
     "services:wait:database": "node infra/scripts/wait-for-postgres.js",
     "migrations:create": "node-pg-migrate -j ts -m infra/migrations create",
     "migrations:build:migrations": "tsc -p tsconfig.build.json",
-    "migrations:up": "npm run migrations:build:migrations && node-pg-migrate -m dist/infra/migrations --envPath .env.development --pattern '^[0-9]+.*\\.js$' up",
+    "migrations:up": "npm run migrations:build:migrations && node-pg-migrate -m dist/infra/migrations --envPath .env.development up",
     "migrations:down": "npm run migrations:build:migrations && node-pg-migrate -m dist/infra/migrations --envPath .env.development down",
     "lint:prettier:check": "prettier --check .",
     "lint:prettier:fix": "prettier --write .",
@@ -35,6 +35,7 @@
     "pg": "8.16.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "swr": "2.2.5",
     "ts-node": "10.9.2"
   },
   "devDependencies": {
