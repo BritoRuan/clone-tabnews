@@ -1,0 +1,32 @@
+name: Execute Migrations
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  migrations:
+    name: Compile and Run Migrations
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/hydrogen"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build migrations (TypeScript → JavaScript)
+        run: npm run migrations:build:migrations
+
+      - name: Run database migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          npx node-pg-migrate \
+            -m dist/infra/migrations \
+            up
