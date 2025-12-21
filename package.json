@@ -5,6 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "dev": "npm run services:up && npm run services:wait:database && npm run migrations:up && next dev",
+    "dev:no-migrate": "npm run services:up && npm run services:wait:database && next dev",
+    "pretest": "npm run migrations:build:migrations",
     "test": "npm run services:up && concurrently -n next,jest --hide next -k -s command-jest \"next dev\" \"jest --runInBand --verbose\"",
     "posttest": "npm run services:stop",
     "test:watch": "jest --watchAll --runInBand --verbose",
@@ -20,6 +22,7 @@
     "lint:prettier:fix": "prettier --write .",
     "lint:eslint:check": "next lint --dir .",
     "build": "next build",
+    "postbuild": "npm run migrations:build:migrations",
     "prepare": "husky",
     "commit": "cz"
   },
