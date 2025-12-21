@@ -1,13 +1,10 @@
-name: Execute Migrations on Production
+name: Validate Migrations
 
-on:
-  push:
-    branches:
-      - main
+on: pull_request
 
 jobs:
   migrations:
-    name: Compile and Run Migrations
+    name: Validate migrations on staging
     runs-on: ubuntu-latest
 
     steps:
@@ -20,12 +17,11 @@ jobs:
 
       - run: npm ci
 
-      - name: Build migrations (TypeScript → JavaScript)
-        run: npm run migrations:build:migrations
+      - run: npm run migrations:build:migrations
 
-      - name: Run database migrations
+      - name: Run migrations on staging database
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL_PRODUCTION }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL_STAGING }}
         run: |
           npx node-pg-migrate \
             -m dist/infra/migrations \
