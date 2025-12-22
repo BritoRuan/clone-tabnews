@@ -2,3 +2,4 @@
 node_modules
 .swc
 *.tsbuildinfo
+dist
