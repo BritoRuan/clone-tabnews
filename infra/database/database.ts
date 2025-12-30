@@ -6,10 +6,6 @@ async function query(queryObject: string | QueryConfig): Promise<QueryResult> {
   try {
     const result = await client.query(queryObject);
     return result;
-  } catch (error) {
-    console.log("\n Error inside catch block of database:");
-    console.error(error);
-    throw error;
   } finally {
     await client?.end();
   }
