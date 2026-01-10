@@ -23,6 +23,8 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL_STAGING }}
         run: |
-          npx node-pg-migrate \
-            -m dist/infra/migrations \
-            up
+          set -euo pipefail
+          if ! npx node-pg-migrate -m dist/infra/migrations up >/dev/null 2>&1; then
+            echo "Failed to run migrations. Check database connectivity and credentials."
+            exit 1
+          fi
