@@ -33,7 +33,7 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       notNull: true,
       default: pgm.func("timezone('utc', now())"),
     },
-
+    // Why timestamp with time zone: https://justatheory.com/2012/04/postgres-use-timestamptz/
     updated_at: {
       type: "timestamptz",
       notNull: true,

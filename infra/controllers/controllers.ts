@@ -2,6 +2,14 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { MethodNotAllowedError } from "../errors/MethodNotAllowedError";
 import { InternalServerError } from "../errors/InternalServerError";
 
+type PublicError = Error & {
+  statusCode: number;
+};
+
+function isPublicError(error: Error): error is PublicError {
+  return "statusCode" in error && typeof error.statusCode === "number";
+}
+
 function onNoMoatchHandler(
   _request: NextApiRequest,
   response: NextApiResponse,
@@ -15,10 +23,14 @@ function onErrorHandler(
   _request: NextApiRequest,
   response: NextApiResponse,
 ) {
+  if (isPublicError(error)) {
+    return response.status(error.statusCode).json(error);
+  }
+
   const publicErrorObject = new InternalServerError({
-    cause: error.cause,
+    cause: error,
   });
-  response.status(publicErrorObject.statusCode).json(publicErrorObject);
+  return response.status(publicErrorObject.statusCode).json(publicErrorObject);
 }
 
 const controller = {
