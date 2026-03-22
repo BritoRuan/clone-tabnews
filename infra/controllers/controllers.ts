@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { MethodNotAllowedError } from "../errors/MethodNotAllowedError";
 import { InternalServerError } from "../errors/InternalServerError";
+import { ValidationError } from "../errors/ValidationError";
+import { NotFoundError } from "../errors/NotFoundError";
 
 function onNoMoatchHandler(
   _request: NextApiRequest,
@@ -15,10 +17,14 @@ function onErrorHandler(
   _request: NextApiRequest,
   response: NextApiResponse,
 ) {
+  if (error instanceof ValidationError || error instanceof NotFoundError) {
+    return response.status(error.statusCode).json(error);
+  }
+
   const publicErrorObject = new InternalServerError({
-    cause: error.cause,
+    cause: error,
   });
-  response.status(publicErrorObject.statusCode).json(publicErrorObject);
+  return response.status(publicErrorObject.statusCode).json(publicErrorObject);
 }
 
 const controller = {

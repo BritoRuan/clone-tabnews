@@ -6,6 +6,6 @@ export const defaultMigrationOptions: RunnerOption = {
   dryRun: true,
   dir: resolve(process.cwd(), process.env.MIGRATIONS_DIR),
   direction: "up",
-  verbose: true,
+  log: () => {},
   migrationsTable: process.env.DATABASE_MIGRATIONS_TABLE,
 };
