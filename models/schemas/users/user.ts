@@ -1,9 +1,12 @@
 import database from "@/infra/database/database";
-import { UserInputValues } from "./types/user-input-values.types";
+import { CreateUserRequest } from "./types/requests/create-user-request.types";
 import { ValidationError } from "@/infra/errors/ValidationError";
 import { NotFoundError } from "@/infra/errors/NotFoundError";
+import password from "../password/password";
+import { FindUserResponse } from "./types/responses/find-user-response.types.js";
+import { CreateUserResponse } from "./types/requests/create-user-response.types";
 
-async function findOneByUsername(username: string) {
+async function findOneByUsername(username: string): Promise<FindUserResponse> {
   const userFound = await runSelectQuery(username);
   return userFound;
 
@@ -32,9 +35,10 @@ async function findOneByUsername(username: string) {
   }
 }
 
-async function create(input: UserInputValues) {
+async function create(input: CreateUserRequest): Promise<CreateUserResponse> {
   await validateUniqueEmail(input.email);
   await validateUniqueUsername(input.username);
+  await hashPasswordInObject(input);
 
   const newUser = await runInsertQuery(input);
   return newUser;
@@ -81,7 +85,12 @@ async function create(input: UserInputValues) {
     }
   }
 
-  async function runInsertQuery(input: UserInputValues) {
+  async function hashPasswordInObject(input: CreateUserRequest) {
+    const hashedPassword = await password.hash(input.password);
+    input.password = hashedPassword;
+  }
+
+  async function runInsertQuery(input: CreateUserRequest) {
     const results = await database.query({
       text: `
       INSERT INTO 
