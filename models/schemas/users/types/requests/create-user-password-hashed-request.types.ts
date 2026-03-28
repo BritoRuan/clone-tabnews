@@ -1,5 +1,4 @@
-export type UpdateUserRequest = {
-  id: string;
+export type CreateUserPasswordHashedRequest = {
   username?: string;
   email?: string;
   password?: string;
