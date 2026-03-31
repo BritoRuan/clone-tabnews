@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { MethodNotAllowedError } from "../errors/MethodNotAllowedError";
 import { InternalServerError } from "../errors/InternalServerError";
-import { ValidationError } from "../errors/ValidationError";
+import { MethodNotAllowedError } from "../errors/MethodNotAllowedError";
 import { NotFoundError } from "../errors/NotFoundError";
+import { UnauthorizedError } from "../errors/UnauthorizedError";
+import { ValidationError } from "../errors/ValidationError";
 
 function onNoMoatchHandler(
   _request: NextApiRequest,
@@ -17,7 +18,11 @@ function onErrorHandler(
   _request: NextApiRequest,
   response: NextApiResponse,
 ) {
-  if (error instanceof ValidationError || error instanceof NotFoundError) {
+  if (
+    error instanceof ValidationError ||
+    error instanceof NotFoundError ||
+    error instanceof UnauthorizedError
+  ) {
     return response.status(error.statusCode).json(error);
   }
 
