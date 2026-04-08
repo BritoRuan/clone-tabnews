@@ -1,13 +1,15 @@
 import crypto from "node:crypto";
 import database from "@/infra/database/database";
 import { UnauthorizedError } from "@/infra/errors/UnauthorizedError";
+import { FindOneValidByTokenResponse } from "./types/find-one-valid-by-token-response.types";
+import { CreateSessionRequest } from "./types/create-session-request.types";
 
 const RANDOM_BYTES_LENGTH = 48;
 const EXPIRATION_IN_MILLISECONDS = 60 * 60 * 24 * 30 * 1000; // 30 Days
 
-async function create(userId: string) {
+async function create(userId: string): Promise<CreateSessionRequest> {
   const token = await generateToken(RANDOM_BYTES_LENGTH);
-  const expiresAt = new Date(Date.now() + EXPIRATION_IN_MILLISECONDS);
+  const expiresAt = generateExpiresAtDate(EXPIRATION_IN_MILLISECONDS);
 
   const newSession = await runInsertQuery(token, userId, expiresAt);
   return newSession;
@@ -37,7 +39,9 @@ async function generateToken(bytesLength: number) {
   return crypto.randomBytes(bytesLength).toString("hex");
 }
 
-async function findOneValidByToken(sessionToken: string) {
+async function findOneValidByToken(
+  sessionToken: string,
+): Promise<FindOneValidByTokenResponse> {
   const sessionFound = await runSelectQuery(sessionToken);
 
   return sessionFound;
@@ -69,9 +73,42 @@ async function findOneValidByToken(sessionToken: string) {
   }
 }
 
+async function renew(sessionId: string) {
+  const expiresAt = generateExpiresAtDate(EXPIRATION_IN_MILLISECONDS);
+  const renewedSessionObject = runUpdateQuery(sessionId, expiresAt);
+
+  return renewedSessionObject;
+
+  async function runUpdateQuery(sessionId: string, expiresAt: Date) {
+    const results = await database.query({
+      text: `
+      UPDATE
+        sessions
+      SET
+        expires_at = $2,
+        updated_at = NOW()
+      WHERE 
+        id = $1
+      RETURNING
+        * 
+      ;`,
+      values: [sessionId, expiresAt],
+    });
+
+    return results.rows[0];
+  }
+}
+
+function generateExpiresAtDate(dateInNumber: number) {
+  const expiresAt = new Date(Date.now() + dateInNumber);
+  return expiresAt;
+}
+
 const session = {
   create,
   findOneValidByToken,
+  renew,
+  generateExpiresAtDate,
   EXPIRATION_IN_MILLISECONDS,
 };
 
