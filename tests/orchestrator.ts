@@ -5,6 +5,7 @@ import database from "@/infra/database/database";
 import migrator from "@/models/migrator";
 import user from "@/models/schemas/users/user";
 import { CreateUserRequest } from "./integration/types/users/requests/create-user-request.type";
+import session from "@/models/schemas/session/session";
 
 async function waitForAllServices() {
   await waitForWebServices();
@@ -41,11 +42,16 @@ async function createUser(input: CreateUserRequest) {
   });
 }
 
+async function createSession(userId: string) {
+  return await session.create(userId);
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
   runPendingMigrations,
   createUser,
+  createSession,
 };
 
 export default orchestrator;
