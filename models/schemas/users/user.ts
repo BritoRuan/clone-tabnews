@@ -9,6 +9,35 @@ import { CreateUserRequest } from "./types/requests/create-user-request.types";
 import { CreateUserResponse } from "./types/requests/create-user-response.types";
 import { UpdateUserRequest } from "./types/requests/update-user-request.types";
 
+async function findOneById(id: string): Promise<FindUserResponse> {
+  const userFound = await runSelectQuery(id);
+  return userFound;
+
+  async function runSelectQuery(id: string) {
+    const results = await database.query({
+      text: `
+      SELECT
+        *
+      FROM
+        users
+      WHERE
+        id = $1
+      LIMIT
+        1
+      ;`,
+      values: [id],
+    });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message: "O id informado não foi encontrado no sistema.",
+        action: "Verifique se o id está digitado corretamente.",
+      });
+    }
+    return results.rows[0];
+  }
+}
+
 async function findOneByUsername(username: string): Promise<FindUserResponse> {
   const userFound = await runSelectQuery(username);
   return userFound;
@@ -192,9 +221,10 @@ async function hashPasswordInObject(input: CreateUserPasswordHashedRequest) {
 
 const user = {
   create,
+  findOneById,
   findOneByUsername,
-  update,
   findOneByEmail,
+  update,
 };
 
 export default user;
