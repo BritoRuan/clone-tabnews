@@ -6,6 +6,7 @@ import { createRouter } from "next-connect";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 router.post(postHandler);
+router.delete(deleteHandler);
 
 export default router.handler(controller.errorHandlers);
 
@@ -22,4 +23,18 @@ async function postHandler(request: NextApiRequest, response: NextApiResponse) {
   controller.setSessionCookie(newSession.token, response);
 
   return response.status(201).json(newSession);
+}
+
+async function deleteHandler(
+  request: NextApiRequest,
+  response: NextApiResponse,
+) {
+  const sessionToken = request.cookies.sid;
+
+  const sessionObject = await session.findOneValidByToken(sessionToken);
+  const expiredSession = await session.expiresById(sessionObject.id);
+
+  controller.clearSessionCookie(response);
+
+  return response.status(200).json(expiredSession);
 }
