@@ -10,7 +10,7 @@ describe("POST /api/v1/sessions", () => {
     await orchestrator.runPendingMigrations();
   });
 
-  describe("Anonymous user", () => {
+  describe("Default user", () => {
     it("With incorrect 'email' but correct 'password'", async () => {
       await orchestrator.createUser({
         password: "correct-password",
