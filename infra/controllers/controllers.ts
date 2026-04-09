@@ -48,12 +48,24 @@ async function setSessionCookie(
   response.setHeader("Set-Cookie", setCookie);
 }
 
+async function clearSessionCookie(response: NextApiResponse) {
+  const setCookie = cookie.serialize("sid", "invalid", {
+    path: "/",
+    maxAge: -1,
+    secure: process.env.NODE_ENV === "production",
+    httpOnly: true,
+  });
+
+  response.setHeader("Set-Cookie", setCookie);
+}
+
 const controller = {
   errorHandlers: {
     onNoMatch: onNoMoatchHandler,
     onError: onErrorHandler,
   },
   setSessionCookie,
+  clearSessionCookie,
 };
 
 export default controller;
