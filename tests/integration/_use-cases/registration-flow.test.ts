@@ -38,5 +38,14 @@ describe("Registration Flow", () => {
         updated_at: createUserResponseBody.updated_at,
       });
     });
+
+    it("Receive activation email", async () => {
+      const lastEmail = await orchestrator.getLastEmail();
+
+      expect(lastEmail.sender).toBe("<tabninos+mailcatcher@gmail.com>");
+      expect(lastEmail.recipients[0]).toBe("<registration-flow@gmail.com>");
+      expect(lastEmail.subject).toBe("Ative seu cadastro no TabNinos!");
+      expect(lastEmail.text).toContain("RegistrationFlow");
+    });
   });
 });

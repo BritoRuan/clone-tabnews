@@ -56,6 +56,7 @@ async function createUser(input: CreateUserRequest) {
     username: input.username || faker.internet.username().replace(/[_.-]/g, ""),
     email: input.email || faker.internet.email(),
     password: input.password || "validpassword",
+    features: input.features,
   });
 }
 
@@ -72,8 +73,10 @@ async function deleteAllEmails() {
 async function getLastEmail() {
   const emailListResponse = await fetch(`${emailHttpUrl}/messages`);
   const emailListBody = await emailListResponse.json();
-
   const lastEmailItem = emailListBody.pop();
+
+  if (!lastEmailItem) return null;
+
   const emailTextResponse = await fetch(
     `${emailHttpUrl}/messages/${lastEmailItem.id}.plain`,
   );
