@@ -13,8 +13,8 @@ async function postHandler(request: NextApiRequest, response: NextApiResponse) {
   const userInputValues = request.body;
   const newUser = await user.create(userInputValues);
 
-  // 1. Criar o Token de Ativação
-  await activation.sendEmailToUser(newUser);
+  const activationToken = await activation.create(newUser.id);
+  await activation.sendEmailToUser(newUser, activationToken.id);
 
   return response.status(201).json(newUser);
 }
