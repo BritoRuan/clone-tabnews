@@ -2,6 +2,7 @@ import email from "@/infra/emails/emails";
 import { SendEmailToUserRequest } from "./types/send-email-to-user.request.types";
 import database from "@/infra/database/database";
 import webserver from "@/infra/http/server/webserver";
+import { NotFoundError } from "@/infra/errors/NotFoundError";
 
 const EXPIRATION_IN_MILLISECONDS = 60 * 15 * 1000; // 15 minutes
 
@@ -28,11 +29,11 @@ async function create(userId: string) {
   }
 }
 
-async function findOneByUserId(userId: string) {
-  const newToken = await runSelectQuery(userId);
-  return newToken;
+async function findOneValidById(tokenId: string) {
+  const activationTokenObject = await runSelectQuery(tokenId);
+  return activationTokenObject;
 
-  async function runSelectQuery(userId: string) {
+  async function runSelectQuery(tokenId: string) {
     const results = await database.query({
       text: `
         SELECT
@@ -40,12 +41,22 @@ async function findOneByUserId(userId: string) {
         FROM
           user_activation_tokens
         WHERE
-          user_id = $1
+          id = $1
+          AND expires_at > NOW()
+          AND used_at IS NULL
         LIMIT 
           1
       ;`,
-      values: [userId],
+      values: [tokenId],
     });
+
+    if (results.rowCount === 0) {
+      throw new NotFoundError({
+        message:
+          "O token de ativação utilizado não foi encontrado no sistema ou expirou.",
+        action: "Faça um novo cadastro.",
+      });
+    }
 
     return results.rows[0];
   }
@@ -71,7 +82,7 @@ Equipe TabNinos`,
 const activation = {
   sendEmailToUser,
   create,
-  findOneByUserId,
+  findOneValidById,
 };
 
 export default activation;

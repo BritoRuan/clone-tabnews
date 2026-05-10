@@ -1,3 +1,5 @@
+import webserver from "@/infra/http/server/webserver";
+import activation from "@/models/schemas/activation/activation";
 import orchestrator from "@/tests/orchestrator";
 
 describe("Registration Flow", () => {
@@ -9,6 +11,7 @@ describe("Registration Flow", () => {
   });
 
   describe("Use case: Registration Flow (all successful)", () => {
+    let createUserResponseBody;
     it("Create user account", async () => {
       const createUserResponse = await fetch(
         "http://localhost:3000/api/v1/users",
@@ -25,7 +28,7 @@ describe("Registration Flow", () => {
         },
       );
 
-      const createUserResponseBody = await createUserResponse.json();
+      createUserResponseBody = await createUserResponse.json();
 
       expect(createUserResponse.status).toBe(201);
       expect(createUserResponseBody).toEqual({
@@ -46,6 +49,18 @@ describe("Registration Flow", () => {
       expect(lastEmail.recipients[0]).toBe("<registration-flow@gmail.com>");
       expect(lastEmail.subject).toBe("Ative seu cadastro no TabNinos!");
       expect(lastEmail.text).toContain("RegistrationFlow");
+
+      const activationTokenId = orchestrator.extractUUID(lastEmail.text);
+
+      expect(lastEmail.text).toContain(
+        `${webserver.origin}/cadastro/ativar/${activationTokenId}`,
+      );
+
+      const activationTokenObject =
+        await activation.findOneValidById(activationTokenId);
+
+      expect(activationTokenObject.user_id).toBe(createUserResponseBody.id);
+      expect(activationTokenObject.used_at).toBe(null);
     });
   });
 });
