@@ -3,6 +3,7 @@ import { SendEmailToUserRequest } from "./types/send-email-to-user.request.types
 import database from "@/infra/database/database";
 import webserver from "@/infra/http/server/webserver";
 import { NotFoundError } from "@/infra/errors/NotFoundError";
+import user from "../users/user";
 
 const EXPIRATION_IN_MILLISECONDS = 60 * 15 * 1000; // 15 minutes
 
@@ -79,10 +80,41 @@ Equipe TabNinos`,
   });
 }
 
+async function markTokenAsUsed(activationTokenId: string) {
+  const usedActivationToken = await runUpdateQuery(activationTokenId);
+  return usedActivationToken;
+
+  async function runUpdateQuery(activationTokenId: string) {
+    const results = await database.query({
+      text: `
+      UPDATE
+        user_activation_tokens
+      SET
+        used_at = timezone('utc', now()),
+        updated_at = timezone('utc', now())
+      WHERE
+        id = $1
+      RETURNING
+        *
+      `,
+      values: [activationTokenId],
+    });
+
+    return results.rows[0];
+  }
+}
+
+async function activateUserByUserId(userId: string) {
+  const activatedUser = await user.setFeatures(userId, ["create:session"]);
+  return activatedUser;
+}
+
 const activation = {
   sendEmailToUser,
   create,
   findOneValidById,
+  markTokenAsUsed,
+  activateUserByUserId,
 };
 
 export default activation;

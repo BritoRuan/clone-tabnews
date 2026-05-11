@@ -5,4 +5,5 @@ export type FindUserResponse = {
   password: string;
   created_at: Date;
   updated_at: Date;
+  features: string[];
 };
