@@ -81,5 +81,28 @@ describe("Registration Flow", () => {
       expect(Date.parse(activationResponseBody.used_at)).not.toBeNaN();
       expect(activatedUser.features).toEqual(["create:session"]);
     });
+
+    it("Login", async () => {
+      const createSessionsResponse = await fetch(
+        "http://localhost:3000/api/v1/sessions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: "registration-flow@gmail.com",
+            password: "senha12345",
+          }),
+        },
+      );
+
+      const createSessionsResponseBody = await createSessionsResponse.json();
+
+      expect(createSessionsResponse.status).toBe(201);
+      expect(createSessionsResponseBody.user_id).toBe(
+        createUserResponseBody.id,
+      );
+    });
   });
 });
