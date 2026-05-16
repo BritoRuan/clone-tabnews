@@ -9,6 +9,7 @@ import { NotFoundError } from "../errors/NotFoundError";
 import { UnauthorizedError } from "../errors/UnauthorizedError";
 import { ValidationError } from "../errors/ValidationError";
 import { ForbiddenError } from "../errors/ForbiddenError";
+import authorization from "@/models/schemas/authorization/authorization";
 
 function onNoMoatchHandler(
   _request: NextApiRequest,
@@ -111,7 +112,7 @@ function canRequest(feature: string) {
   ) {
     const userTryingToRequest = request.context.user;
 
-    if (userTryingToRequest.features.includes(feature)) {
+    if (authorization.can(userTryingToRequest, feature)) {
       return next();
     }
 

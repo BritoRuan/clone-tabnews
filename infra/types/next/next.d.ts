@@ -4,7 +4,7 @@ type AnonymousUser = {
   features: string[];
 };
 
-type RequestUser = FindUserResponse | AnonymousUser;
+export type RequestUser = FindUserResponse | AnonymousUser;
 
 declare module "next" {
   // eslint-disable-next-line no-unused-vars
