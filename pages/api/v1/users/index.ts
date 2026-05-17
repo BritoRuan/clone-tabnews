@@ -5,6 +5,8 @@ import user from "@/models/schemas/users/user";
 import activation from "@/models/schemas/activation/activation";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
+router.use(controller.injectAnonymousOrUser);
+router.post(controller.canRequest("create:user"), postHandler);
 router.post(postHandler);
 
 export default router.handler(controller.errorHandlers);
