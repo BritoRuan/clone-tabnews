@@ -5,6 +5,7 @@ import user from "@/models/schemas/users/user";
 import { faker } from "@faker-js/faker";
 import retry from "async-retry";
 import { CreateUserRequest } from "./integration/types/users/requests/create-user-request.type";
+import activation from "@/models/schemas/activation/activation";
 
 const emailHttpUrl = `http://${process.env.EMAIL_HTTP_HOST}:${process.env.EMAIL_HTTP_PORT}`;
 
@@ -56,6 +57,7 @@ async function createUser(input: CreateUserRequest) {
     username: input.username || faker.internet.username().replace(/[_.-]/g, ""),
     email: input.email || faker.internet.email(),
     password: input.password || "validpassword",
+    features: input.features,
   });
 }
 
@@ -72,8 +74,10 @@ async function deleteAllEmails() {
 async function getLastEmail() {
   const emailListResponse = await fetch(`${emailHttpUrl}/messages`);
   const emailListBody = await emailListResponse.json();
-
   const lastEmailItem = emailListBody.pop();
+
+  if (!lastEmailItem) return null;
+
   const emailTextResponse = await fetch(
     `${emailHttpUrl}/messages/${lastEmailItem.id}.plain`,
   );
@@ -84,6 +88,15 @@ async function getLastEmail() {
   return lastEmailItem;
 }
 
+function extractUUID(text: string) {
+  const match = text.match(/[0-9a-fA-F-]{36}/);
+  return match ? match[0] : null;
+}
+
+async function activateUser(id: string) {
+  return await activation.activateUserByUserId(id);
+}
+
 const orchestrator = {
   waitForAllServices,
   clearDatabase,
@@ -92,6 +105,8 @@ const orchestrator = {
   createSession,
   deleteAllEmails,
   getLastEmail,
+  extractUUID,
+  activateUser,
 };
 
 export default orchestrator;

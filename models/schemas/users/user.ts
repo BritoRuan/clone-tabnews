@@ -100,6 +100,7 @@ async function create(input: CreateUserRequest): Promise<CreateUserResponse> {
   await validateUniqueUsername(input.username);
   await validateUniqueEmail(input.email);
   await hashPasswordInObject(input);
+  injectDefaultFeaturesInObject(input);
 
   const newUser = await runInsertQuery(input);
   return newUser;
@@ -108,16 +109,20 @@ async function create(input: CreateUserRequest): Promise<CreateUserResponse> {
     const results = await database.query({
       text: `
       INSERT INTO 
-        users (username, email, password)
+        users (username, email, password, features)
       VALUES 
-        ($1, $2, $3)
+        ($1, $2, $3, $4)
       RETURNING
         *
       ;`,
-      values: [input.username, input.email, input.password],
+      values: [input.username, input.email, input.password, input.features],
     });
 
     return results.rows[0];
+  }
+
+  function injectDefaultFeaturesInObject(input: CreateUserRequest) {
+    input.features = ["read:activation_token"];
   }
 }
 
@@ -219,12 +224,37 @@ async function hashPasswordInObject(input: CreateUserPasswordHashedRequest) {
   input.password = hashedPassword;
 }
 
+async function setFeatures(userId: string, features: string[]) {
+  const updatedUser = await runUpdateQuery(userId, features);
+  return updatedUser;
+
+  async function runUpdateQuery(userId: string, features: string[]) {
+    const results = await database.query({
+      text: `
+      UPDATE
+        users
+      SET
+        features = $2,
+        updated_at = timezone('utc', now())
+      WHERE
+        id = $1
+      RETURNING
+        *
+      ;`,
+      values: [userId, features],
+    });
+
+    return results.rows[0];
+  }
+}
+
 const user = {
   create,
   findOneById,
   findOneByUsername,
   findOneByEmail,
   update,
+  setFeatures,
 };
 
 export default user;
