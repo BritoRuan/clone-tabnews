@@ -11,7 +11,7 @@ function can(user: RequestUser, feature: string, resource?: ResourceRequest) {
   if (feature === "update:user" && resource) {
     authorized = false;
 
-    if (user.id === resource.id) {
+    if (user.id === resource.id || can(user, "update:user:others")) {
       authorized = true;
     }
   }
