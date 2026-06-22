@@ -66,6 +66,14 @@ function filterOutput(user: RequestUser, feature: string, resource?: any) {
       used_at: resource.used_at,
     };
   }
+
+  if (feature === "create:migration") {
+    return {
+      path: resource.path,
+      name: resource.name,
+      timestamp: resource.timestamp,
+    };
+  }
 }
 
 const authorization = {
