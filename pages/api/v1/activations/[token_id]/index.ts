@@ -1,5 +1,6 @@
 import controller from "@/infra/controllers/controllers";
 import activation from "@/models/schemas/activation/activation";
+import authorization from "@/models/schemas/authorization/authorization";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createRouter } from "next-connect";
 
@@ -13,6 +14,7 @@ async function patchHandler(
   request: NextApiRequest,
   response: NextApiResponse,
 ) {
+  const userTryingToPatch = request.context.user;
   const activationTokenId = request.query.token_id as string;
 
   const validActivationToken =
@@ -23,5 +25,11 @@ async function patchHandler(
   const usedActivationToken =
     await activation.markTokenAsUsed(activationTokenId);
 
-  return response.status(200).json(usedActivationToken);
+  const secureOutputValues = authorization.filterOutput(
+    userTryingToPatch,
+    "read:activation_token",
+    usedActivationToken,
+  );
+
+  return response.status(200).json(secureOutputValues);
 }

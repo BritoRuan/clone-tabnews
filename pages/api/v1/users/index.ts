@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import controller from "@/infra/controllers/controllers";
 import user from "@/models/schemas/users/user";
 import activation from "@/models/schemas/activation/activation";
+import authorization from "@/models/schemas/authorization/authorization";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 router.use(controller.injectAnonymousOrUser);
@@ -12,11 +13,18 @@ router.post(postHandler);
 export default router.handler(controller.errorHandlers);
 
 async function postHandler(request: NextApiRequest, response: NextApiResponse) {
+  const userTryingToPost = request.context.user;
   const userInputValues = request.body;
   const newUser = await user.create(userInputValues);
 
   const activationToken = await activation.create(newUser.id);
   await activation.sendEmailToUser(newUser, activationToken.id);
 
-  return response.status(201).json(newUser);
+  const secureOutputValues = authorization.filterOutput(
+    userTryingToPost,
+    "read:user",
+    newUser,
+  );
+
+  return response.status(201).json(secureOutputValues);
 }
