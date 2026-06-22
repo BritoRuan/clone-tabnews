@@ -23,7 +23,8 @@ describe("POST /api/v1/migrations", () => {
       expect(responseBody).toEqual({
         name: "ForbiddenError",
         message: "Você não possui permissão para executar esta ação.",
-        action: 'Verifique se o seu usuário possui a feature "create:migration"',
+        action:
+          'Verifique se o seu usuário possui a feature "create:migration"',
         status_code: 403,
       });
     });
@@ -39,16 +40,13 @@ describe("POST /api/v1/migrations", () => {
 
       await orchestrator.addFeaturesToUser(user.id, ["create:migration"]);
 
-      const response = await fetch(
-        "http://localhost:3000/api/v1/migrations",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Cookie: `sid=${userSessionObject.token}`,
-          },
+      const response = await fetch("http://localhost:3000/api/v1/migrations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `sid=${userSessionObject.token}`,
         },
-      );
+      });
 
       expect(response.status).toBe(200);
     });
