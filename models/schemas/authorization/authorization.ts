@@ -74,6 +74,32 @@ function filterOutput(user: RequestUser, feature: string, resource?: any) {
       timestamp: resource.timestamp,
     };
   }
+
+  if (feature === "read:status") {
+    if (user.features.includes("read:status:all")) {
+      return {
+        updated_at: resource.updated_at,
+        dependencies: {
+          database: {
+            version: resource.dependencies.database.version,
+            max_connections: resource.dependencies.database.max_connections,
+            opened_connections:
+              resource.dependencies.database.opened_connections,
+          },
+        },
+      };
+    }
+
+    return {
+      updated_at: resource.updated_at,
+      dependencies: {
+        database: {
+          max_connections: resource.dependencies.database.max_connections,
+          opened_connections: resource.dependencies.database.opened_connections,
+        },
+      },
+    };
+  }
 }
 
 const authorization = {
