@@ -2,7 +2,7 @@ import type { FindUserResponse } from "../users/find-user-response.types";
 
 type AnonymousUser = {
   id?: string;
-  features: string[];
+  features?: string[];
 };
 
 export type RequestUser = FindUserResponse | AnonymousUser;

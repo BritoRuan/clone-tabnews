@@ -6,37 +6,72 @@ describe("POST /api/v1/migrations", () => {
   beforeAll(async () => {
     await orchestrator.waitForAllServices();
     await orchestrator.clearDatabase();
+    await orchestrator.runPendingMigrations();
   });
 
   describe("Anonymous user", () => {
-    describe("Retrieving pending migrations", () => {
-      it("For the first time", async () => {
-        const { req: firstRequest, res: firstResponse } = createMocks({
-          method: "POST",
-        });
-
-        await handler(firstRequest, firstResponse);
-
-        const firstResponseBody = firstResponse._getJSONData();
-
-        expect(firstResponse._getStatusCode()).toBe(201);
-        expect(Array.isArray(firstResponseBody)).toBe(true);
-        expect(firstResponseBody.length).toBeGreaterThan(0);
+    it("should return an error when user does not have permission", async () => {
+      const { req: request, res: response } = createMocks({
+        method: "POST",
       });
 
-      it("For the second time", async () => {
-        const { req: secondRequest, res: secondResponse } = createMocks({
-          method: "POST",
-        });
+      await handler(request, response);
 
-        await handler(secondRequest, secondResponse);
+      const responseBody = response._getJSONData();
 
-        const secondResponseBody = secondResponse._getJSONData();
-
-        expect(secondResponse._getStatusCode()).toBe(200);
-        expect(Array.isArray(secondResponseBody)).toBe(true);
-        expect(secondResponseBody.length).toBe(0);
+      expect(response._getStatusCode()).toBe(403);
+      expect(responseBody).toEqual({
+        name: "ForbiddenError",
+        message: "Você não possui permissão para executar esta ação.",
+        action:
+          'Verifique se o seu usuário possui a feature "create:migration"',
+        status_code: 403,
       });
+    });
+  });
+
+  describe("Default user", () => {
+    it("running migrations", async () => {
+      const user = await orchestrator.createUser({
+        password: "senha12345",
+      });
+      await orchestrator.activateUser(user.id);
+      const userSessionObject = await orchestrator.createSession(user.id);
+
+      const response = await fetch("http://localhost:3000/api/v1/migrations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `sid=${userSessionObject.token}`,
+        },
+      });
+
+      expect(response.status).toBe(403);
+    });
+  });
+
+  describe("Privileged user", () => {
+    it("With `create:migration`", async () => {
+      const user = await orchestrator.createUser({});
+      const activatedUser = await orchestrator.activateUser(user.id);
+      const userSessionObject = await orchestrator.createSession(
+        activatedUser.id,
+      );
+
+      await orchestrator.addFeaturesToUser(user.id, ["create:migration"]);
+
+      const response = await fetch("http://localhost:3000/api/v1/migrations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `sid=${userSessionObject.token}`,
+        },
+      });
+
+      const responseBody = await response.json();
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(responseBody)).toBe(true);
     });
   });
 });

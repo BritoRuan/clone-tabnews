@@ -1,4 +1,5 @@
 import controller from "@/infra/controllers/controllers";
+import authorization from "@/models/schemas/authorization/authorization";
 import session from "@/models/schemas/session/session";
 import user from "@/models/schemas/users/user";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -11,6 +12,7 @@ router.get(controller.canRequest("read:session"), getHandler);
 export default router.handler(controller.errorHandlers);
 
 async function getHandler(request: NextApiRequest, response: NextApiResponse) {
+  const userTryingToGet = request.context.user;
   const sessionToken = request.cookies.sid;
 
   const sessionObject = await session.findOneValidByToken(sessionToken);
@@ -24,5 +26,12 @@ async function getHandler(request: NextApiRequest, response: NextApiResponse) {
     "Cache-Control",
     "no-store, no-cache, max-age=0, must-revalidate",
   );
-  return response.status(200).json(userFound);
+
+  const secureOutputValues = authorization.filterOutput(
+    userTryingToGet,
+    "read:user:self",
+    userFound,
+  );
+
+  return response.status(200).json(secureOutputValues);
 }

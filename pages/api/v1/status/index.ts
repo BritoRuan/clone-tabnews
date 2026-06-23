@@ -2,13 +2,16 @@ import { createRouter } from "next-connect";
 import database from "@/infra/database/database";
 import { NextApiRequest, NextApiResponse } from "next";
 import controller from "@/infra/controllers/controllers";
+import authorization from "@/models/schemas/authorization/authorization";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
+router.use(controller.injectAnonymousOrUser);
 router.get(getHandler);
 
 export default router.handler(controller.errorHandlers);
 
 async function getHandler(_request: NextApiRequest, response: NextApiResponse) {
+  const userTryingToGet = _request.context.user;
   const updatedAt = new Date().toISOString();
 
   const databaseVersionResult = await database.query("SHOW server_version;");
@@ -30,7 +33,7 @@ async function getHandler(_request: NextApiRequest, response: NextApiResponse) {
   const databaseOpenedConnectionsValue =
     databaseOpenedConnectionsResult.rows[0].count;
 
-  response.status(200).json({
+  const statusObject = {
     updated_at: updatedAt,
     dependencies: {
       database: {
@@ -39,5 +42,13 @@ async function getHandler(_request: NextApiRequest, response: NextApiResponse) {
         opened_connections: databaseOpenedConnectionsValue,
       },
     },
-  });
+  };
+
+  const secureOutputValues = authorization.filterOutput(
+    userTryingToGet,
+    "read:status",
+    statusObject,
+  );
+
+  response.status(200).json(secureOutputValues);
 }

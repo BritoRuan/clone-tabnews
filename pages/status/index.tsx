@@ -1,7 +1,7 @@
 import useSWR from "swr";
 
 type DatabaseInfo = {
-  version: string;
+  version?: string;
   max_connections: number;
   opened_connections: number;
 };
@@ -52,13 +52,16 @@ const DatabaseStatusInfo = () => {
     return <p>Informações do Banco de dados: Carregando…</p>;
   }
 
+  const { version, max_connections, opened_connections } =
+    response.data.database;
+
   return (
     <section>
       <h2>Informações do Banco de dados</h2>
       <ul>
-        <li>Versão: {response.data.database.version}</li>
-        <li>Conexões máximas: {response.data.database.max_connections}</li>
-        <li>Conexões abertas: {response.data.database.opened_connections}</li>
+        {version && <li>Versão: {version}</li>}
+        <li>Conexões máximas: {max_connections}</li>
+        <li>Conexões abertas: {opened_connections}</li>
       </ul>
     </section>
   );
