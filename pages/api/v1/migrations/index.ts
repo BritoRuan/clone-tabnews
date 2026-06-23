@@ -6,14 +6,22 @@ import authorization from "@/models/schemas/authorization/authorization";
 
 const router = createRouter<NextApiRequest, NextApiResponse>();
 router.use(controller.injectAnonymousOrUser);
-router.get(getHandler);
+router.get(controller.canRequest("read:migration"), getHandler);
 router.post(controller.canRequest("create:migration"), postHandler);
 
 export default router.handler(controller.errorHandlers);
 
 async function getHandler(_request: NextApiRequest, response: NextApiResponse) {
+  const userTryingToGet = _request.context.user;
   const pendingMigrations = await migrator.listPendingMigrations();
-  return response.status(200).json(pendingMigrations);
+
+  const secureOutputValues = authorization.filterOutput(
+    userTryingToGet,
+    "read:migration",
+    pendingMigrations,
+  );
+
+  return response.status(200).json(secureOutputValues);
 }
 
 async function postHandler(
@@ -29,7 +37,7 @@ async function postHandler(
 
   const secureOutputValues = authorization.filterOutput(
     userTryingToPost,
-    "create:migration",
+    "read:migration",
     migratedMigrations,
   );
 

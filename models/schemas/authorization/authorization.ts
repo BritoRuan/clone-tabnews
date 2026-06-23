@@ -67,12 +67,14 @@ function filterOutput(user: RequestUser, feature: string, resource?: any) {
     };
   }
 
-  if (feature === "create:migration") {
-    return {
-      path: resource.path,
-      name: resource.name,
-      timestamp: resource.timestamp,
-    };
+  if (feature === "read:migration") {
+    return resource.map((migration) => {
+      return {
+        path: migration.path,
+        name: migration.name,
+        timestamp: migration.timestamp,
+      };
+    });
   }
 
   if (feature === "read:status") {
