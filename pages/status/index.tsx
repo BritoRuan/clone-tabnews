@@ -52,7 +52,8 @@ const DatabaseStatusInfo = () => {
     return <p>Informações do Banco de dados: Carregando…</p>;
   }
 
-  const { version, max_connections, opened_connections } = response.data.database;
+  const { version, max_connections, opened_connections } =
+    response.data.database;
 
   return (
     <section>
