@@ -11,7 +11,7 @@ describe("POST /api/v1/migrations", () => {
   });
 
   describe("Anonymous user", () => {
-    it("should return an error when user does not have permission", async () => {
+    it("Running pending migrations", async () => {
       const { req: request, res: response } = createMocks({
         method: "POST",
       });
@@ -32,7 +32,7 @@ describe("POST /api/v1/migrations", () => {
   });
 
   describe("Default user", () => {
-    it("running migrations", async () => {
+    it("Running pending migrations", async () => {
       const user = await orchestrator.createUser({
         password: "senha12345",
       });
