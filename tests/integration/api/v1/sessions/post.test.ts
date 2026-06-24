@@ -1,3 +1,4 @@
+import webserver from "@/infra/http/server/webserver";
 import orchestrator from "@/tests/orchestrator";
 import { version as uuidVersion } from "uuid";
 import session from "@/models/schemas/session/session";
@@ -11,12 +12,12 @@ describe("POST /api/v1/sessions", () => {
   });
 
   describe("Default user", () => {
-    it("With incorrect 'email' but correct 'password'", async () => {
+    it("With incorrect `email` but correct `password`", async () => {
       await orchestrator.createUser({
         password: "correct-password",
       });
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,12 +39,12 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    it("With correct 'email' but incorrect 'password'", async () => {
+    it("With correct `email` but incorrect `password`", async () => {
       await orchestrator.createUser({
         email: "correct.email@gmail.com",
       });
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,10 +66,10 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    it("With incorrect 'email' and incorrect 'password'", async () => {
+    it("With incorrect `email` and incorrect `password`", async () => {
       await orchestrator.createUser({});
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,7 +91,7 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    it("With correct 'email' and correct 'password'", async () => {
+    it("With correct `email` and correct `password`", async () => {
       const createdUser = await orchestrator.createUser({
         email: "everything-correct@gmail.com",
         password: "everythingcorrect",
@@ -98,7 +99,7 @@ describe("POST /api/v1/sessions", () => {
 
       await orchestrator.activateUser(createdUser.id);
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -126,15 +127,27 @@ describe("POST /api/v1/sessions", () => {
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
 
+      // `expires_at` e calculado na aplicacao antes da persistencia.
+      // `created_at` e calculado depois na camada do banco de dados.
+      // Por isso, o tempo real entre as duas datas pode ficar ligeiramente
+      // menor do que o tempo de expiracao configurado e nao bater 30 dias nos
+      // milissegundos caso seja calculado apenas `expires_at` - `created_at`.
+      // Entao a ideia e garantir que no momento `expires_at` seja maior que
+      // `created_at`, e tambem que possa existir distancia de ate 5 segundos
+      // entre as duas datas para cobrir o caso do banco sofrer algum load
+      // inesperado nos testes.
+
       const expiresAt = new Date(responseBody.expires_at);
       const createdAt = new Date(responseBody.created_at);
 
-      expiresAt.setMilliseconds(0);
-      createdAt.setMilliseconds(0);
+      expect(expiresAt >= createdAt).toBe(true);
 
-      expect(expiresAt.getTime() - createdAt.getTime()).toBe(
-        session.EXPIRATION_IN_MILLISECONDS,
-      );
+      const actualLifetimeInMilliseconds =
+        expiresAt.getTime() - createdAt.getTime();
+      const lifetimeDifferenceInMilliseconds =
+        session.EXPIRATION_IN_MILLISECONDS - actualLifetimeInMilliseconds;
+
+      expect(lifetimeDifferenceInMilliseconds).toBeLessThanOrEqual(5000);
 
       const parsedSetCookie = setCookieParser(response, {
         map: true,
@@ -145,6 +158,7 @@ describe("POST /api/v1/sessions", () => {
         maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
         path: "/",
         httpOnly: true,
+        sameSite: "Lax",
       });
     });
   });

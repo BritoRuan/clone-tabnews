@@ -4,10 +4,7 @@ import { FindUserResponse } from "@/infra/types/users/find-user-response.types";
 import password from "@/models/schemas/password/password";
 import user from "@/models/schemas/users/user";
 
-async function getAuthenticatedUser(
-  providedEmail: string,
-  providedPassword: string,
-) {
+async function getUser(providedEmail: string, providedPassword: string) {
   try {
     const storedUser = await findUserByEmail(providedEmail);
     await validatePassword(providedPassword, storedUser.password);
@@ -62,7 +59,7 @@ async function getAuthenticatedUser(
 }
 
 const authentication = {
-  getAuthenticatedUser,
+  getUser,
 };
 
 export default authentication;

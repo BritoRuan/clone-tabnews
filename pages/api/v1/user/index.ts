@@ -5,11 +5,10 @@ import user from "@/models/schemas/users/user";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createRouter } from "next-connect";
 
-const router = createRouter<NextApiRequest, NextApiResponse>();
-router.use(controller.injectAnonymousOrUser);
-router.get(controller.canRequest("read:session"), getHandler);
-
-export default router.handler(controller.errorHandlers);
+export default createRouter<NextApiRequest, NextApiResponse>()
+  .use(controller.injectAnonymousOrUser)
+  .get(controller.canRequest("read:session"), getHandler)
+  .handler(controller.errorHandlers);
 
 async function getHandler(request: NextApiRequest, response: NextApiResponse) {
   const userTryingToGet = request.context.user;

@@ -4,11 +4,10 @@ import authorization from "@/models/schemas/authorization/authorization";
 import { NextApiRequest, NextApiResponse } from "next";
 import { createRouter } from "next-connect";
 
-const router = createRouter<NextApiRequest, NextApiResponse>();
-router.use(controller.injectAnonymousOrUser);
-router.patch(controller.canRequest("read:activation_token"), patchHandler);
-
-export default router.handler(controller.errorHandlers);
+export default createRouter<NextApiRequest, NextApiResponse>()
+  .use(controller.injectAnonymousOrUser)
+  .patch(controller.canRequest("read:activation_token"), patchHandler)
+  .handler(controller.errorHandlers);
 
 async function patchHandler(
   request: NextApiRequest,

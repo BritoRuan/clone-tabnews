@@ -5,12 +5,11 @@ import user from "@/models/schemas/users/user";
 import activation from "@/models/schemas/activation/activation";
 import authorization from "@/models/schemas/authorization/authorization";
 
-const router = createRouter<NextApiRequest, NextApiResponse>();
-router.use(controller.injectAnonymousOrUser);
-router.post(controller.canRequest("create:user"), postHandler);
-router.post(postHandler);
-
-export default router.handler(controller.errorHandlers);
+export default createRouter<NextApiRequest, NextApiResponse>()
+  .use(controller.injectAnonymousOrUser)
+  .post(controller.canRequest("create:user"), postHandler)
+  .post(postHandler)
+  .handler(controller.errorHandlers);
 
 async function postHandler(request: NextApiRequest, response: NextApiResponse) {
   const userTryingToPost = request.context.user;

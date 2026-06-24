@@ -86,8 +86,8 @@ describe("models/authorization", () => {
         password: "resource",
         username: "UserWithValidUsernameFeatureAndResource",
         features: ["read:user"],
-        created_at: "2026-0101T00:00:00.000Z",
-        updated_at: "2026-0101T00:00:00.000Z",
+        created_at: "2026-01-01T00:00:00.000Z",
+        updated_at: "2026-01-01T00:00:00.000Z",
       };
 
       const result = authorization.filterOutput(
@@ -100,8 +100,8 @@ describe("models/authorization", () => {
         id: "eb9b5840-6c0f-4354-a97f-23ea673126fe",
         features: ["read:user"],
         username: "UserWithValidUsernameFeatureAndResource",
-        created_at: "2026-0101T00:00:00.000Z",
-        updated_at: "2026-0101T00:00:00.000Z",
+        created_at: "2026-01-01T00:00:00.000Z",
+        updated_at: "2026-01-01T00:00:00.000Z",
       });
     });
   });

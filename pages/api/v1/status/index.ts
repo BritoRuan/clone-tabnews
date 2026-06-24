@@ -4,11 +4,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import controller from "@/infra/controllers/controllers";
 import authorization from "@/models/schemas/authorization/authorization";
 
-const router = createRouter<NextApiRequest, NextApiResponse>();
-router.use(controller.injectAnonymousOrUser);
-router.get(getHandler);
-
-export default router.handler(controller.errorHandlers);
+export default createRouter<NextApiRequest, NextApiResponse>()
+  .use(controller.injectAnonymousOrUser)
+  .get(getHandler)
+  .handler(controller.errorHandlers);
 
 async function getHandler(_request: NextApiRequest, response: NextApiResponse) {
   const userTryingToGet = _request.context.user;
@@ -50,5 +49,5 @@ async function getHandler(_request: NextApiRequest, response: NextApiResponse) {
     statusObject,
   );
 
-  response.status(200).json(secureOutputValues);
+  return response.status(200).json(secureOutputValues);
 }
