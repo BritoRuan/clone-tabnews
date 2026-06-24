@@ -11,7 +11,7 @@ describe("POST /api/v1/sessions", () => {
   });
 
   describe("Default user", () => {
-    it("With incorrect 'email' but correct 'password'", async () => {
+    it("With incorrect `email` but correct `password`", async () => {
       await orchestrator.createUser({
         password: "correct-password",
       });
@@ -38,7 +38,7 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    it("With correct 'email' but incorrect 'password'", async () => {
+    it("With correct `email` but incorrect `password`", async () => {
       await orchestrator.createUser({
         email: "correct.email@gmail.com",
       });
@@ -65,7 +65,7 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    it("With incorrect 'email' and incorrect 'password'", async () => {
+    it("With incorrect `email` and incorrect `password`", async () => {
       await orchestrator.createUser({});
 
       const response = await fetch("http://localhost:3000/api/v1/sessions", {
@@ -90,7 +90,7 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    it("With correct 'email' and correct 'password'", async () => {
+    it("With correct `email` and correct `password`", async () => {
       const createdUser = await orchestrator.createUser({
         email: "everything-correct@gmail.com",
         password: "everythingcorrect",
