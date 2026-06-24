@@ -1,4 +1,5 @@
 import email from "@/infra/emails/emails";
+import emailConfig from "@/infra/emails/config";
 import { SendEmailToUserRequest } from "./types/send-email-to-user.request.types";
 import database from "@/infra/database/database";
 import webserver from "@/infra/http/server/webserver";
@@ -70,7 +71,7 @@ async function sendEmailToUser(
   activationToken: string,
 ) {
   await email.send({
-    from: "TabNinos <tabninos+mailcatcher@gmail.com>",
+    from: emailConfig.getFromAddress(),
     to: input.email,
     subject: "Ative seu cadastro no TabNinos!",
     text: `${input.username}, clique no link abaixo para ativar seu cadastro no TabNinos:

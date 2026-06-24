@@ -1,4 +1,5 @@
 import webserver from "@/infra/http/server/webserver";
+import emailConfig from "@/infra/emails/config";
 import activation from "@/models/schemas/activation/activation";
 import user from "@/models/schemas/users/user";
 import orchestrator from "@/tests/orchestrator";
@@ -46,7 +47,7 @@ describe("Registration Flow", () => {
     it("Receive activation email", async () => {
       const lastEmail = await orchestrator.getLastEmail();
 
-      expect(lastEmail.sender).toBe("<tabninos+mailcatcher@gmail.com>");
+      expect(lastEmail.sender).toBe(`<${emailConfig.getFromEmail()}>`);
       expect(lastEmail.recipients[0]).toBe("<registration-flow@gmail.com>");
       expect(lastEmail.subject).toBe("Ative seu cadastro no TabNinos!");
       expect(lastEmail.text).toContain("RegistrationFlow");
