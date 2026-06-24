@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { MailOptionsRequest } from "./types/mail-options-request.types";
+import { ServiceError } from "../errors/ServiceError";
 
 function createTransporter() {
   return nodemailer.createTransport({
@@ -15,7 +16,16 @@ function createTransporter() {
 
 async function send(input: MailOptionsRequest) {
   const transporter = createTransporter();
-  await transporter.sendMail(input);
+  try {
+    await transporter.sendMail(input);
+  } catch (error) {
+    throw new ServiceError({
+      message: "Não foi possível enviar o email.",
+      action: "Verifique se o serviço de email está disponível.",
+      cause: error,
+      context: JSON.stringify(input),
+    });
+  }
 }
 
 const email = {
