@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "implementation of https://www.tabnews.com.br/ for the course.dev",
   "main": "index.ts",
+  "engines": {
+    "node": "24"
+  },
   "scripts": {
     "dev": "npm run services:up && npm run services:wait:database && npm run migrations:up && next dev",
     "dev:no-migrate": "npm run services:up && npm run services:wait:database && next dev",
