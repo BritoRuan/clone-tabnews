@@ -4,12 +4,11 @@ import controller from "@/infra/controllers/controllers";
 import migrator from "@/models/migrator";
 import authorization from "@/models/schemas/authorization/authorization";
 
-const router = createRouter<NextApiRequest, NextApiResponse>();
-router.use(controller.injectAnonymousOrUser);
-router.get(controller.canRequest("read:migration"), getHandler);
-router.post(controller.canRequest("create:migration"), postHandler);
-
-export default router.handler(controller.errorHandlers);
+export default createRouter<NextApiRequest, NextApiResponse>()
+  .use(controller.injectAnonymousOrUser)
+  .get(controller.canRequest("read:migration"), getHandler)
+  .post(controller.canRequest("create:migration"), postHandler)
+  .handler(controller.errorHandlers);
 
 async function getHandler(_request: NextApiRequest, response: NextApiResponse) {
   const userTryingToGet = _request.context.user;
