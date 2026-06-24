@@ -1,3 +1,4 @@
+import webserver from "@/infra/http/server/webserver";
 import orchestrator from "@/tests/orchestrator";
 import { createMocks } from "node-mocks-http";
 import handler from "pages/api/v1/migrations";
@@ -38,7 +39,7 @@ describe("POST /api/v1/migrations", () => {
       await orchestrator.activateUser(user.id);
       const userSessionObject = await orchestrator.createSession(user.id);
 
-      const response = await fetch("http://localhost:3000/api/v1/migrations", {
+      const response = await fetch(`${webserver.origin}/api/v1/migrations`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +61,7 @@ describe("POST /api/v1/migrations", () => {
 
       await orchestrator.addFeaturesToUser(user.id, ["create:migration"]);
 
-      const response = await fetch("http://localhost:3000/api/v1/migrations", {
+      const response = await fetch(`${webserver.origin}/api/v1/migrations`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

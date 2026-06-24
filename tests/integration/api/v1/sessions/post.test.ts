@@ -1,3 +1,4 @@
+import webserver from "@/infra/http/server/webserver";
 import orchestrator from "@/tests/orchestrator";
 import { version as uuidVersion } from "uuid";
 import session from "@/models/schemas/session/session";
@@ -16,7 +17,7 @@ describe("POST /api/v1/sessions", () => {
         password: "correct-password",
       });
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,7 +44,7 @@ describe("POST /api/v1/sessions", () => {
         email: "correct.email@gmail.com",
       });
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +69,7 @@ describe("POST /api/v1/sessions", () => {
     it("With incorrect `email` and incorrect `password`", async () => {
       await orchestrator.createUser({});
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -98,7 +99,7 @@ describe("POST /api/v1/sessions", () => {
 
       await orchestrator.activateUser(createdUser.id);
 
-      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+      const response = await fetch(`${webserver.origin}/api/v1/sessions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

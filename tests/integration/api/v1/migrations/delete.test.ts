@@ -1,3 +1,4 @@
+import webserver from "@/infra/http/server/webserver";
 import orchestrator from "@/tests/orchestrator";
 
 describe("DELETE /api/v1/migrations", () => {
@@ -9,12 +10,9 @@ describe("DELETE /api/v1/migrations", () => {
   describe("Anonymous user", () => {
     describe("Trying to make a request using the delete method.", () => {
       it("should return an error when using DELETE method", async () => {
-        const response = await fetch(
-          "http://localhost:3000/api/v1/migrations",
-          {
-            method: "DELETE",
-          },
-        );
+        const response = await fetch(`${webserver.origin}/api/v1/migrations`, {
+          method: "DELETE",
+        });
 
         const responseBody = await response.json();
 

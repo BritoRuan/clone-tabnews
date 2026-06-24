@@ -1,3 +1,4 @@
+import webserver from "@/infra/http/server/webserver";
 import orchestrator from "@/tests/orchestrator";
 
 describe("GET /api/v1/users/[username]", () => {
@@ -15,9 +16,7 @@ describe("GET /api/v1/users/[username]", () => {
         password: "senha12345",
       });
 
-      const request2 = await fetch(
-        "http://localhost:3000/api/v1/users/SameCase",
-      );
+      const request2 = await fetch(`${webserver.origin}/api/v1/users/SameCase`);
 
       const responseBody = await request2.json();
 
@@ -41,7 +40,7 @@ describe("GET /api/v1/users/[username]", () => {
       });
 
       const request2 = await fetch(
-        "http://localhost:3000/api/v1/users/Nosamecase",
+        `${webserver.origin}/api/v1/users/Nosamecase`,
       );
 
       const responseBody = await request2.json();
@@ -60,7 +59,7 @@ describe("GET /api/v1/users/[username]", () => {
 
     it("With noexistent username'", async () => {
       const response = await fetch(
-        "http://localhost:3000/api/v1/users/noexistentusername",
+        `${webserver.origin}/api/v1/users/noexistentusername`,
       );
 
       const responseBody = await response.json();

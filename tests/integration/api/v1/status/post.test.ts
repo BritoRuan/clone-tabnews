@@ -1,3 +1,4 @@
+import webserver from "@/infra/http/server/webserver";
 import orchestrator from "@/tests/orchestrator";
 
 describe("POST to /api/v1/status", () => {
@@ -6,7 +7,7 @@ describe("POST to /api/v1/status", () => {
   });
   describe("Anonymous user", () => {
     it("Retrieving current system status", async () => {
-      const response = await fetch("http://localhost:3000/api/v1/status", {
+      const response = await fetch(`${webserver.origin}/api/v1/status`, {
         method: "POST",
       });
 
