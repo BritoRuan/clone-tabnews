@@ -10,6 +10,7 @@ import { UnauthorizedError } from "../errors/UnauthorizedError";
 import { ValidationError } from "../errors/ValidationError";
 import { ForbiddenError } from "../errors/ForbiddenError";
 import authorization from "@/models/schemas/authorization/authorization";
+import { ServiceError } from "../errors/ServiceError";
 
 function onNoMoatchHandler(
   _request: NextApiRequest,
@@ -27,7 +28,8 @@ function onErrorHandler(
   if (
     error instanceof ValidationError ||
     error instanceof NotFoundError ||
-    error instanceof ForbiddenError
+    error instanceof ForbiddenError ||
+    error instanceof ServiceError
   ) {
     return response.status(error.statusCode).json(error);
   }
