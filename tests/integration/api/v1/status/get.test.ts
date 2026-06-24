@@ -4,6 +4,8 @@ import orchestrator from "@/tests/orchestrator";
 describe("GET to /api/v1/status", () => {
   beforeAll(async () => {
     await orchestrator.waitForAllServices();
+    await orchestrator.clearDatabase();
+    await orchestrator.runPendingMigrations();
   });
   describe("Anonymous user", () => {
     it("Retrieving current system status", async () => {
